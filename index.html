@@ -103,6 +103,14 @@ header .links { margin-top: 10px; }
 a { color: var(--link); }
 .foot { color: var(--chrome-muted); font-size: 13px; line-height: 1.7; }
 .foot p { margin: 0 0 4px; }
+.promo { background: var(--paper); color: var(--ink); border-radius: 6px; display: grid; grid-template-columns: 200px 1fr; gap: 18px; align-items: center; padding: 16px; text-decoration: none; }
+.promo img { width: 100%; border-radius: 6px; display: block; }
+.promo .eyebrow { font-size: 13px; color: var(--ink-soft); }
+.promo h3 { font: 800 22px var(--display); margin: 2px 0 6px; }
+.promo p { margin: 0 0 12px; line-height: 1.6; font-size: 15px; }
+.promo .cta { display: inline-block; background: var(--accent); color: var(--accent-ink); font-weight: 600; padding: 9px 18px; border-radius: 999px; text-decoration: none; }
+.score .promo { grid-column: 1 / -1; padding: 0; margin-top: 6px; border-top: 1px solid var(--rule); padding-top: 14px; border-radius: 0; flex-basis: 100%; }
+@media (max-width: 520px) { .promo { grid-template-columns: 1fr; } }
 
 @media (max-width: 520px) {
   .opt.num { font-size: 40px; }
@@ -144,7 +152,7 @@ body.examining .wrap { padding-bottom: 120px; }
   .namebar { display: flex !important; }
   body { background: #fff; }
   .wrap { max-width: none; padding: 0; gap: 0; }
-  header p, .foot, .controls, .bar, .score, .verdict, .lines, .play, .tips, .no-print { display: none !important; }
+  header p, .foot, .promo, .controls, .bar, .score, .verdict, .lines, .play, .tips, .no-print { display: none !important; }
   .opt.picked::before { display: none; }
   header { padding: 0 0 6mm; }
   .sheet { box-shadow: none; border: 1.5px solid #ccc; break-inside: avoid; margin-bottom: 6mm; }
@@ -188,9 +196,10 @@ body.examining .wrap { padding-bottom: 120px; }
     </ul>
   </section>
 
+  <aside class="promo" id="promo-foot"></aside>
+
   <footer class="foot">
     <p>錄音由 AI 合成，已逐句核對過讀音；如果聽到讀錯，歡迎留言話我知。插圖亦由 AI 生成。</p>
-    <p>另一個做俾小朋友嘅工具：<a href="https://honzi.latentyonder.com/try">星星認字</a>（540 個常用繁體字，廣東話發音，免註冊試玩）。</p>
     <p><a href="https://latentyonder.com/">latentyonder.com</a></p>
   </footer>
 
@@ -256,6 +265,16 @@ const Q = [
       `<div class="scene">${o("box", 68, "left:56px;bottom:0;")}${o("cat", 58, "left:2px;bottom:0;")}</div>`,
       `<div class="scene">${o("box", 68, "left:0;bottom:0;")}${o("cat", 58, "left:98px;bottom:0;")}</div>`], 0) },
 ];
+
+const PROMO = lead => `
+  <a href="https://honzi.latentyonder.com/try?from=k1-mock"><img src="img/honzi-card.png" alt="星星認字：免費繁體字認字卡，配粵語發音" width="600" height="315"></a>
+  <div>
+    <div class="eyebrow">${lead}</div>
+    <h3>星星認字</h3>
+    <p>免費繁體字認字卡，配粵語發音。582 個字分 9 個主題，每張卡可以聽發音、睇筆順。</p>
+    <a class="cta" href="https://honzi.latentyonder.com/try?from=k1-mock">免註冊試玩</a>
+  </div>`;
+document.getElementById("promo-foot").innerHTML = PROMO("同一個作者做嘅另一個小工具");
 
 const PLAY = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>`;
 const pad = i => String(i).padStart(2, "0");
@@ -368,7 +387,7 @@ function grade() {
     s.querySelector(".verdict")?.remove();
     s.querySelector(".qhead").insertAdjacentHTML("beforeend", `<span class="verdict ${ok ? "ok" : "no"}">${ok ? "答啱" : answered(s) ? "答錯" : "未答"}</span>`);
   });
-  scoreEl.innerHTML = `<b>${n} / ${Q.length}</b><span>答啱 ${n} 題。綠框係正確答案，藍圈同藍線係小朋友揀嘅。</span>`;
+  scoreEl.innerHTML = `<b>${n} / ${Q.length}</b><span>答啱 ${n} 題。綠框係正確答案，藍圈同藍線係小朋友揀嘅。</span><div class="promo">${PROMO("做完數學，順便認吓字？")}</div>`;
   scoreEl.hidden = false; scoreEl.scrollIntoView({ block: "center" });
 }
 function reset() {
