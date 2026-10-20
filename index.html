@@ -215,6 +215,7 @@ body.examining .wrap { padding-bottom: 120px; }
 
 <script>
 const IMG = n => `img/${n}.png`;
+const CLIP = id => `audio/${id}.mp3?v=3`;
 const o = (n, h = 60, extra = "") => `<img class="o" src="${IMG(n)}" alt="" style="height:${h}px;${extra}">`;
 const rep = (n, k, h) => Array.from({ length: k }, () => o(n, h)).join("");
 const shape = (kind, color, size = 64) => {
@@ -302,7 +303,7 @@ let run = 0, graded = false, current = -1, clipDone = null, advance = null, skip
 const stopAudio = () => { audio.pause(); replay.pause(); };
 const playClip = id => new Promise(res => {
   stopAudio(); clipDone = res;
-  audio.src = `audio/${id}.mp3?v=3`; audio.onended = res; audio.onerror = res;
+  audio.src = CLIP(id); audio.onended = res; audio.onerror = res;
   audio.play().catch(res);
 });
 const wait = (s, token) => new Promise(res => {
@@ -372,7 +373,7 @@ document.getElementById("qs").addEventListener("click", e => {
   const b = e.target.closest(".play");
   if (b) {
     // While a question is still being read, a re-listen would just play the same clip again out of step.
-    if (!bar.hidden) { if (audio.paused) { replay.src = `audio/${b.dataset.a}.mp3?v=3`; replay.play().catch(() => {}); } return; }
+    if (!bar.hidden) { if (audio.paused) { replay.src = CLIP(b.dataset.a); replay.play().catch(() => {}); } return; }
     mark(b.closest(".sheet")); playClip(b.dataset.a).then(() => mark(null)); return;
   }
   pick(e.target);
