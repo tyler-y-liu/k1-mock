@@ -298,8 +298,10 @@ const status = document.getElementById("status"), bar = document.getElementById(
 const sheets = [...document.querySelectorAll(".sheet")];
 let run = 0, graded = false, current = -1, clipDone = null, advance = null, skip = false;
 
+// replay is a separate element so a re-listen never settles the exam's clipDone, but anything that silences audio must silence it too or the next question plays over it.
+const stopAudio = () => { audio.pause(); replay.pause(); };
 const playClip = id => new Promise(res => {
-  clipDone = res;
+  stopAudio(); clipDone = res;
   audio.src = `audio/${id}.mp3?v=3`; audio.onended = res; audio.onerror = res;
   audio.play().catch(res);
 });
@@ -369,7 +371,8 @@ function pick(target) {
 document.getElementById("qs").addEventListener("click", e => {
   const b = e.target.closest(".play");
   if (b) {
-    if (!bar.hidden) { replay.src = `audio/${b.dataset.a}.mp3?v=3`; replay.play().catch(() => {}); return; }
+    // While a question is still being read, a re-listen would just play the same clip again out of step.
+    if (!bar.hidden) { if (audio.paused) { replay.src = `audio/${b.dataset.a}.mp3?v=3`; replay.play().catch(() => {}); } return; }
     mark(b.closest(".sheet")); playClip(b.dataset.a).then(() => mark(null)); return;
   }
   pick(e.target);
@@ -407,8 +410,8 @@ document.getElementById("reset").onclick = () => { reset(); scrollTo({ top: 0 })
 // --- exam mode ---
 const examBtn = document.getElementById("exam"), stopBtn = document.getElementById("stop");
 const setExam = on => { examBtn.hidden = on; stopBtn.hidden = !on; bar.hidden = !on; document.body.classList.toggle("examining", on); if (!on) status.textContent = ""; };
-function stopExam() { run++; audio.pause(); clipDone && clipDone(); advance && advance(); current = -1; mark(null); setExam(false); }
-document.getElementById("next").onclick = () => { skip = true; audio.pause(); clipDone && clipDone(); advance && advance(); };
+function stopExam() { run++; stopAudio(); clipDone && clipDone(); advance && advance(); current = -1; mark(null); setExam(false); }
+document.getElementById("next").onclick = () => { skip = true; stopAudio(); clipDone && clipDone(); advance && advance(); };
 examBtn.onclick = async () => {
   if (graded) reset();
   const token = ++run, gap = +document.getElementById("gap").value;
