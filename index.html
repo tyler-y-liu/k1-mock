@@ -374,7 +374,8 @@ document.getElementById("qs").addEventListener("click", e => {
   const b = e.target.closest(".play");
   if (b) {
     // While a question is still being read, a re-listen would just play the same clip again out of step.
-    if (!bar.hidden) { if (audio.paused) { replay.src = CLIP(b.dataset.a); replay.play().catch(() => {}); } return; }
+    // A clip that failed to load never flips paused back to true, so error also counts as "not being read".
+    if (!bar.hidden) { if (audio.paused || audio.error) { replay.src = CLIP(b.dataset.a); replay.play().catch(() => {}); } return; }
     mark(b.closest(".sheet")); playClip(b.dataset.a).then(() => mark(null)); return;
   }
   pick(e.target);
