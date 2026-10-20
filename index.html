@@ -271,12 +271,13 @@ const Q = [
       `<div class="scene">${o("box", 68, "left:0;bottom:0;")}${o("cat", 58, "left:98px;bottom:0;")}</div>`], 0) },
 ];
 
+// No character or theme counts here: 認字 keeps adding characters, and its claims.test.ts that guards those numbers can't see this repo, so a count here goes stale silently (it already did once, 540 -> 582).
 const PROMO = lead => `
   <a href="https://honzi.latentyonder.com/try?from=k1-mock"><img src="img/honzi-card.png" alt="星星認字：免費繁體字認字卡，配粵語發音" width="600" height="315"></a>
   <div>
     <div class="eyebrow">${lead}</div>
     <h3>星星認字</h3>
-    <p>免費繁體字認字卡，配粵語發音。582 個字分 9 個主題，每張卡可以聽發音、睇筆順。</p>
+    <p>免費繁體字認字卡，配粵語發音。字卡按主題分組，每張卡可以聽發音、睇筆順。</p>
     <a class="cta" href="https://honzi.latentyonder.com/try?from=k1-mock">免註冊試玩</a>
   </div>`;
 document.getElementById("promo-foot").innerHTML = PROMO("同一個作者做嘅另一個小工具");
