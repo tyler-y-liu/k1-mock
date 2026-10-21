@@ -327,7 +327,7 @@ const answered = sheet => isMatch(sheet)
 function drawLines(sheet) {
   const m = sheet.querySelector(".match"); if (!m) return;
   const svg = m.querySelector(".lines"), box = m.getBoundingClientRect();
-  svg.innerHTML = [...m.querySelectorAll(".cell.L")].filter(c => c.dataset.to !== undefined && c.dataset.to !== "").map(l => {
+  svg.innerHTML = [...m.querySelectorAll(".cell.L")].filter(c => c.dataset.to).map(l => {
     const r = m.querySelectorAll(".cell.R")[+l.dataset.to], a = l.getBoundingClientRect(), b = r.getBoundingClientRect();
     return `<line x1="${a.right - box.left}" y1="${a.top + a.height / 2 - box.top}" x2="${b.left - box.left}" y2="${b.top + b.height / 2 - box.top}"/>`;
   }).join("");
@@ -354,7 +354,7 @@ function pick(target) {
   const sel = sheet.querySelector(".cell.sel");
   const connect = (l, r) => {
     const ri = String(Rs.indexOf(r));
-    Ls.forEach(x => { if (x.dataset.to === ri) x.dataset.to = ""; });
+    Ls.forEach(x => { if (x.dataset.to === ri) delete x.dataset.to; });
     l.dataset.to = ri;
     Ls.concat(Rs).forEach(x => x.classList.remove("sel"));
     drawLines(sheet);
@@ -384,7 +384,7 @@ document.getElementById("qs").addEventListener("keydown", e => {
 
 // --- grading ---
 const correct = sheet => isMatch(sheet)
-  ? [...sheet.querySelectorAll(".cell.L")].every(l => l.dataset.to !== undefined && l.dataset.to !== "" && sheet.querySelectorAll(".cell.R")[+l.dataset.to].dataset.k === l.dataset.k)
+  ? answered(sheet) && [...sheet.querySelectorAll(".cell.L")].every(l => sheet.querySelectorAll(".cell.R")[+l.dataset.to].dataset.k === l.dataset.k)
   : [...sheet.querySelectorAll(".opt")].every(o => o.classList.contains("picked") === o.classList.contains("ans"));
 const scoreEl = document.getElementById("score"), root = document.getElementById("root");
 function grade() {
@@ -401,7 +401,7 @@ function grade() {
 function reset() {
   stopExam(); graded = false; root.classList.remove("graded", "show-ans"); ansBtn.textContent = "顯示答案";
   document.querySelectorAll(".picked, .sel").forEach(x => x.classList.remove("picked", "sel"));
-  document.querySelectorAll(".cell.L").forEach(x => x.dataset.to = "");
+  document.querySelectorAll(".cell.L").forEach(x => { delete x.dataset.to; });
   document.querySelectorAll(".verdict").forEach(x => x.remove());
   sheets.forEach(drawLines); scoreEl.hidden = true;
 }
