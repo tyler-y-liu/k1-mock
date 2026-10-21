@@ -307,11 +307,10 @@ const playClip = id => new Promise(res => {
   audio.src = CLIP(id); audio.onended = res; audio.onerror = res;
   audio.play().catch(res);
 });
-const wait = (s, token) => new Promise(res => {
+const wait = s => new Promise(res => {
   let left = s, timer;
   advance = () => { clearTimeout(timer); advance = null; res(); };
   const tick = () => {
-    if (token !== run) return advance && advance();
     if (left <= 0) return advance && advance();
     status.textContent = `第 ${current + 1} 題 · 作答中，剩 ${left} 秒`; left--; timer = setTimeout(tick, 1000);
   };
@@ -413,8 +412,9 @@ document.getElementById("reset").onclick = () => { reset(); scrollTo({ top: 0 })
 // --- exam mode ---
 const examBtn = document.getElementById("exam"), stopBtn = document.getElementById("stop");
 const setExam = on => { examBtn.hidden = on; stopBtn.hidden = !on; bar.hidden = !on; document.body.classList.toggle("examining", on); if (!on) status.textContent = ""; };
-function stopExam() { run++; stopAudio(); clipDone && clipDone(); advance && advance(); current = -1; mark(null); setExam(false); }
-document.getElementById("next").onclick = () => { skip = true; stopAudio(); clipDone && clipDone(); advance && advance(); };
+const interrupt = () => { stopAudio(); clipDone && clipDone(); advance && advance(); };
+function stopExam() { run++; interrupt(); current = -1; mark(null); setExam(false); }
+document.getElementById("next").onclick = () => { skip = true; interrupt(); };
 examBtn.onclick = async () => {
   if (graded) reset();
   const token = ++run, gap = +document.getElementById("gap").value;
@@ -430,7 +430,7 @@ examBtn.onclick = async () => {
     if (token !== run) break;
     if (skip) continue;
     if (answered(el) && !isMany(i)) { await new Promise(r => setTimeout(r, 600)); continue; }
-    await wait(gap, token);
+    await wait(gap);
   }
   if (token === run) { current = -1; mark(null); status.textContent = "做完喇！"; await playClip("q16"); if (token === run) grade(); }
 };
