@@ -55,7 +55,6 @@ button, select { font: 600 15px var(--body); border-radius: 999px; border: 1.5px
 button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 button:focus-visible, select:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .controls label { display: flex; gap: 6px; align-items: center; color: var(--chrome-muted); font-size: 14px; }
-#status { font-size: 14px; color: var(--chrome-muted); min-height: 1.2em; }
 
 .sheet { background: var(--paper); color: var(--ink); border-radius: 6px; padding: 20px 22px 26px;
   box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 6px 18px rgba(0,0,0,.06); display: flex; flex-direction: column; gap: 16px;
@@ -113,7 +112,7 @@ a { color: var(--link); }
 .promo h3 { font: 800 22px var(--display); margin: 2px 0 6px; }
 .promo p { margin: 0 0 12px; line-height: 1.6; font-size: 15px; }
 .promo .cta { display: inline-block; background: var(--accent); color: var(--accent-ink); font-weight: 600; padding: 9px 18px; border-radius: 999px; text-decoration: none; }
-.score .promo { grid-column: 1 / -1; padding: 0; margin-top: 6px; border-top: 1px solid var(--rule); padding-top: 14px; border-radius: 0; flex-basis: 100%; }
+.score .promo { padding: 0; margin-top: 6px; border-top: 1px solid var(--rule); padding-top: 14px; border-radius: 0; flex-basis: 100%; }
 @media (max-width: 520px) { .promo { grid-template-columns: 1fr; } }
 
 @media (max-width: 520px) {
@@ -146,7 +145,7 @@ img.o, .opt svg { max-width: 100%; object-fit: contain; }
   padding-top: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
   display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.bar #status { font-size: 15px; color: var(--chrome-fg); }
+.bar #status { font-size: 15px; color: var(--chrome-fg); min-height: 1.2em; }
 .bar .next { font-size: 17px; padding: 12px 22px; }
 body.examining .wrap { padding-bottom: 120px; }
 [hidden] { display: none !important; }
@@ -156,7 +155,7 @@ body.examining .wrap { padding-bottom: 120px; }
   .namebar { display: flex !important; }
   body { background: #fff; }
   .wrap { max-width: none; padding: 0; gap: 0; }
-  header p, .foot, .promo, .controls, .bar, .score, .verdict, .lines, .play, .tips, .no-print { display: none !important; }
+  header p, .foot, .promo, .controls, .bar, .score, .verdict, .lines, .play, .tips { display: none !important; }
   .opt.picked::before { display: none; }
   header { padding: 0 0 6mm; }
   .sheet { box-shadow: none; border: 1.5px solid #ccc; break-inside: avoid; margin-bottom: 6mm; }
