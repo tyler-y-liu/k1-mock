@@ -73,6 +73,7 @@ img.o { mix-blend-mode: multiply; display: block; }
 .opt { border: 2px solid var(--rule); border-radius: 14px; min-height: 120px; display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; align-content: center; gap: 6px; padding: 12px 8px; position: relative; }
 .opt.num { font-family: var(--display); font-weight: 800; font-size: 56px; align-items: center; min-height: 96px; font-variant-numeric: tabular-nums; }
 .opt.col { flex-direction: column; align-items: flex-start; align-content: flex-start; justify-content: center; padding-left: 20px; }
+.opt.shape { min-height: 90px; align-items: center; }
 .show-ans .opt.ans { border-color: var(--ok); box-shadow: 0 0 0 4px rgba(31,157,85,.25); }
 .show-ans .opt.ans::after { content: "答案"; position: absolute; top: 6px; right: 8px; font: 600 12px var(--body); color: var(--ok); }
 
@@ -119,8 +120,8 @@ a { color: var(--link); }
   .opt.num { font-size: 40px; }
   .match { column-gap: 18%; }
   .sheet { padding: 16px 14px 20px; }
-  .opts[style*="--n:6"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .opts[style*="--n:4"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .opts[data-n="6"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .opts[data-n="4"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .opt { min-height: 96px; padding: 10px 6px; }
   .scene { zoom: .62; }
   .plate { padding: 12px 8px; }
@@ -225,8 +226,11 @@ const shape = (kind, color, size = 64) => {
   return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}" aria-label="${kind}">${body}</svg>`;
 };
 const dot = c => `<span class="dot" style="background:${c}"></span>`;
-const opts = (cells, ans, cls = "") => `<div class="opts" style="--n:${cells.length}">` +
-  cells.map((c, i) => `<div class="opt ${cls} ${i === ans ? "ans" : ""}" tabindex="0" role="button">${c}</div>`).join("") + `</div>`;
+const opts = (cells, ans, cls = "", n = cells.length) => {
+  const answers = [].concat(ans);
+  return `<div class="opts" data-n="${n}" style="--n:${n}">` +
+    cells.map((c, i) => `<div class="opt ${cls} ${answers.includes(i) ? "ans" : ""}" tabindex="0" role="button">${c}</div>`).join("") + `</div>`;
+};
 const match = (L, LK, R, RK, note) => `<div class="match"><svg class="lines" aria-hidden="true"></svg>` +
   L.map((l, i) => `<div class="cell L" data-k="${LK[i]}" tabindex="0" role="button">${l}</div><div class="cell R ${/^\d$/.test(R[i]) ? "num" : ""}" data-k="${RK[i]}" tabindex="0" role="button">${R[i]}</div>`).join("") +
   `</div><div class="ansnote">答案：${note}</div>`;
@@ -247,12 +251,12 @@ const Q = [
   { t: "邊個蘋果最大？圈出嚟。", key: "右邊",
     html: opts([o("apple", 56), o("apple", 38), o("apple", 92)], 2) },
   { t: "邊架火車最長？圈出嚟。", key: "最下面（4 卡）",
-    html: opts([rep("train", 3, 30), rep("train", 2, 30), rep("train", 4, 30)].map(r => `<div style="display:flex;gap:0">${r}</div>`), 2, "col").replace('--n:3', '--n:1') },
+    html: opts([rep("train", 3, 30), rep("train", 2, 30), rep("train", 4, 30)].map(r => `<div style="display:flex;gap:0">${r}</div>`), 2, "col", 1) },
   { t: "邊棵樹最高？圈出嚟。", key: "中間",
     html: opts([o("tree", 64), o("tree", 124), o("tree", 90)], 1) },
   { t: "將所有圓形圈出嚟。", many: true, key: "3 個圓形（紅、藍、綠）",
-    html: `<div class="opts" style="--n:6">` + [["circle", RED, 1], ["triangle", YEL], ["circle", BLU, 1, 48], ["square", GRN], ["circle", GRN, 1, 56], ["triangle", BLU]]
-      .map(([k, c, a, s]) => `<div class="opt ${a ? "ans" : ""}" tabindex="0" role="button" style="min-height:90px;align-items:center">${shape(k, c, s || 64)}</div>`).join("") + `</div>` },
+    html: opts([["circle", RED], ["triangle", YEL], ["circle", BLU, 48], ["square", GRN], ["circle", GRN, 56], ["triangle", BLU]]
+      .map(([k, c, s]) => shape(k, c, s || 64)), [0, 2, 4], "shape") },
   { t: "邊個係三角形？圈出嚟。", key: "中間",
     html: opts([shape("square", BLU, 76), shape("triangle", RED, 80), shape("circle", YEL, 76)], 1) },
   { t: "將一樣嘅圖案用線連埋一齊。", key: "火車↔火車、貓仔↔貓仔、蘋果↔蘋果",
