@@ -1,8 +1,8 @@
 <!doctype html><html lang="zh-HK"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>K1 數學模擬卷｜廣東話讀題</title>
-<meta name="description" content="幼稚園 K1 數學模擬卷：15 題，廣東話錄音讀題，平板或手機上直接圈答案、連線，做完自動計分。亦有 A4 打印版。免費、免註冊。">
+<title>K1 數學模擬卷（第一套）15 題｜廣東話讀題</title>
+<meta name="description" content="幼稚園 K1 數學模擬卷第一套：15 題，廣東話錄音讀題，平板或手機上直接圈答案、連線，做完自動計分。亦有 A4 打印版。免費、免註冊。">
 <meta property="og:type" content="website">
-<meta property="og:title" content="K1 數學模擬卷｜廣東話讀題">
+<meta property="og:title" content="K1 數學模擬卷（第一套）15 題｜廣東話讀題">
 <meta property="og:description" content="15 題，廣東話讀題，平板上直接圈答案、連線，做完自動計分。免費、免註冊，亦有 A4 打印版。">
 <meta property="og:url" content="https://k1-maths-mock.latentyonder.com/">
 <meta property="og:image" content="https://k1-maths-mock.latentyonder.com/og.png">
@@ -49,6 +49,14 @@ body { background: var(--desk); color: var(--chrome-fg); font-family: var(--body
 
 header h1 { font-family: var(--display); font-weight: 800; font-size: clamp(26px, 5vw, 36px); margin: 0; text-wrap: balance; }
 header p { margin: 6px 0 0; color: var(--chrome-muted); line-height: 1.6; max-width: 62ch; }
+
+/* Set switcher: two papers, one control. Active paper is filled so it reads as "you are here" without a separate label. */
+.sets { display: inline-flex; gap: 3px; padding: 3px; border: 1.5px solid var(--chrome-muted); border-radius: 999px; margin-bottom: 14px; }
+.sets a { font: 600 14px var(--body); color: var(--chrome-muted); text-decoration: none; padding: 7px 14px; border-radius: 999px; white-space: nowrap; }
+.sets a.on { background: var(--accent); color: var(--accent-ink); }
+.sets a:not(.on):hover { background: rgba(128,128,128,.14); }
+.sets a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+@media (max-width: 359px) { .sets a { padding: 7px 10px; font-size: 13px; } }
 
 .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 button, select { font: 600 15px var(--body); border-radius: 999px; border: 1.5px solid var(--chrome-muted); background: transparent; color: var(--chrome-fg); padding: 9px 16px; cursor: pointer; }
@@ -156,7 +164,7 @@ body.examining .wrap { padding-bottom: 120px; }
   .namebar { display: flex !important; }
   body { background: #fff; }
   .wrap { max-width: none; padding: 0; gap: 0; }
-  header p, .foot, .promo, .controls, .bar, .score, .verdict, .lines, .play, .tips { display: none !important; }
+  header p, .foot, .promo, .controls, .bar, .score, .verdict, .lines, .play, .tips, .sets { display: none !important; }
   .opt.picked::before { display: none; }
   header { padding: 0 0 6mm; }
   .sheet { box-shadow: none; border: 1.5px solid #ccc; break-inside: avoid; margin-bottom: 6mm; }
@@ -166,9 +174,13 @@ body.examining .wrap { padding-bottom: 120px; }
 
 <div class="wrap" id="root">
   <header>
-    <h1>K1 數學模擬卷</h1>
+    <nav class="sets" aria-label="揀邊一套模擬卷">
+      <a href="./" class="on" aria-current="page">第一套 15 題</a>
+      <a href="set2/">第二套 18 題</a>
+    </nav>
+    <h1>K1 數學模擬卷（第一套）</h1>
     <p>參考「香港學界數學及奧數精英賽」公開章程入面 K1 數學組嘅形式自製：15 題，廣東話錄音讀題，小朋友只需圈出或者連線。題目按 K1 上學期課程推斷，<strong>唔係官方試題，同主辦機構無關</strong>。</p>
-    <p class="links"><a href="k1-mock.pdf">下載 A4 打印版（PDF）</a> · <a href="set2/">做第二套（18 題，加咗數序同遠近）</a></p>
+    <p class="links"><a href="k1-mock.pdf">下載第一套 A4 打印版（PDF）</a></p>
     <div class="namebar" style="display:none;gap:40px;margin-top:8px;font-size:16px"><span>姓名：________________</span><span>日期：__________</span></div>
   </header>
 
