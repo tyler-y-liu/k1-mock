@@ -104,6 +104,11 @@ img.o { mix-blend-mode: multiply; display: block; -webkit-touch-callout: none; u
 .arrow15::after { content: ""; width: 26px; height: 8px; border-radius: 4px; background: #7c4dd6; }
 .scene18 { position: relative; width: 100%; min-width: 200px; height: 150px; background: #fbfdff; }  /* #18 */
 .grass18 { position: absolute; left: 0; right: 0; bottom: 0; height: 14px; background: #cfe8b8; }
+/* #14 one-to-one matching: two rows (rabbits over carrots) stacked inside one option cell */
+.pairscene { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.pairrow { display: flex; align-items: center; justify-content: center; gap: 6px; }
+/* shadow matching (not used by the second set; kept so a silhouette never ships as a colour picture) */
+.sil { filter: brightness(0); }
 
 .match { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 30%; }
 .match .cell { border: 2px solid var(--rule); border-radius: 14px; min-height: 96px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px; padding: 8px; position: relative; }
@@ -166,6 +171,8 @@ a { color: var(--link); }
   #q6 .opt:nth-child(3) img.o { height: 30px !important; }
   #q12 .opt img.o { height: 40px !important; }
   #q14 .stage.seq img.o { height: 30px !important; }
+  #q14 .pairscene img.o { height: 22px !important; }   /* 3 x 22 + 2 x 3 = 72px, fits a ~78px cell */
+  #q14 .pairrow { gap: 3px; }
   .stage.seq { gap: 6px; }
   .dot { width: 36px; height: 36px; }        /* +2x2.5px border = 41px outer */
   .qbox { width: 52px; height: 52px; font-size: 26px; }
@@ -269,8 +276,9 @@ body.examining .wrap { padding-bottom: 120px; }
     <ul>
       <li><strong>題數：18 題</strong>（第一套 15 題）—— 對齊官方上限。</li>
       <li><strong>新增 3 種題型</strong>：第 16 題數序留空（4 5 _ 7 8）、第 17 題相鄰數（6 前面係邊個）、第 18 題比較遠近（邊間屋最遠）。</li>
-      <li><strong>圖形題深一級</strong>：第一套靠顏色認圓形，第二套要分正方形同長方形（正方形唔算長方形）。</li>
-      <li><strong>規律題由兩款變三款循環</strong>：橙橙紫、花花三葉草三葉草。</li>
+      <li><strong>圖形題深一級</strong>：六格入面有圓形、正方形、三角形干擾，要圈晒所有長方形（正方形唔算長方形）。</li>
+      <li><strong>換入 3 種新問法</strong>：第 2 題圈出兩個一樣嘅圖案、第 10 題數吓大正方形用咗幾多個細正方形、第 14 題「每隻兔仔一個蘿蔔，邊幅圖分得啱」。</li>
+      <li><strong>顏色規律升級</strong>：橙橙紫（AAB），比第一套嘅紅黃交替複雜一級。</li>
       <li><strong>物料全部換新</strong>：魚、蝴蝶、士多啤梨、雞仔、狗仔、提子、大象、兔仔、龜、羊……同第一套冇一隻重複。</li>
       <li>形式一樣：廣東話讀題、圈答案／連線、做完自動計分。</li>
     </ul>
@@ -283,7 +291,7 @@ body.examining .wrap { padding-bottom: 120px; }
     <ul>
       <li>建議用平板加耳機做。正式比賽 25 分鐘、播錄音讀題，家長唔可以陪考。練習時盡量由錄音讀題，大人唔好幫手解釋。</li>
       <li>大會講最常見嘅失分係聽漏題目、心急翻頁、數錯數。數完一次，叫佢再點住數多次。</li>
-      <li>喺螢幕上作答：撳一下就圈住，再撳另一個就改答案；連線題先撳左邊、再撳右邊。答完會自動去下一題，第 9 題可以圈幾個，圈好撳「下一題」。</li>
+      <li>喺螢幕上作答：撳一下就圈住，再撳另一個就改答案；連線題先撳左邊、再撳右邊。答完會自動去下一題，第 2 題同第 9 題可以圈幾個，圈好撳「下一題」。</li>
       <li>紙本作答：第 3、11 題由左邊黑點畫線去右邊黑點。</li>
     </ul>
   </section>
@@ -304,9 +312,10 @@ body.examining .wrap { padding-bottom: 120px; }
 
 <script>
 const IMG = n => `../img/set2/${n}.png`;
-const CLIP = id => `../audio/set2/${id}.mp3?v=2`;
+const CLIP = id => `../audio/set2/${id}.mp3?v=3`;
 const o = (n, h = 60, extra = "") => `<img class="o" src="${IMG(n)}" alt="" style="height:${h}px;${extra}">`;
 const rep = (n, k, h) => Array.from({ length: k }, () => o(n, h)).join("");
+const pairrow = (n, k, h) => `<div class="pairrow">${rep(n, k, h)}</div>`;   /* #14: one row of a pair-scene */
 const shape = (kind, color, size = 64) => {
   const s = size, st = `stroke="#1f2933" stroke-width="3"`;
   // rectangle is 2:1 (size x size/2) so "正方形唔算長方形" is decided by proportion, not by guesswork
@@ -339,8 +348,8 @@ const ORG = "#f2911b", PUR = "#9b59b6", NVY = "#1257ae", UI = "#7c4dd6";
 const Q = [
   { t: "數一數有幾多條魚？圈出啱嘅數字。", key: "6",
     html: `<div class="stage row">${rep("fish", 6, 52)}</div>` + opts(["5", "6", "7"], 1, "num") },
-  { t: "數一數有幾多隻蝴蝶？圈出啱嘅數字。", key: "7",
-    html: `<div class="stage row">${rep("butterfly", 7, 46)}</div>` + opts(["7", "6", "8"], 0, "num") },
+  { t: "圈出兩個一樣嘅圖案。", many: true, key: "第 1 格同第 4 格（兩條魚）",
+    html: opts([o("fish", 60), o("butterfly", 60), o("chick", 60), o("fish", 60), o("elephant", 60), o("dog", 60)], [0, 3], "shape", 3) },
   { t: "數一數左邊每一格有幾多樣嘢，用線連去右邊啱嘅數字。", key: "士多啤梨→2、雞仔→5、狗仔→4",
     html: match([rep("strawberry", 2, 44), `<span class="chicks">${rep("chick", 5, 40)}</span>`, rep("dog", 4, 40)], ["2", "5", "4"], ["4", "2", "5"], ["4", "2", "5"], "士多啤梨連 2，雞仔連 5，狗仔連 4") },
   { t: "邊邊啲提子多啲？圈出嗰邊。", key: "右邊（6 串）",
@@ -360,8 +369,8 @@ const Q = [
   { t: "將所有長方形圈出嚟。", many: true, key: "2 個長方形（第 1 格同第 3 格）— 正方形唔算長方形",
     html: opts([shape("rectangle", PUR, 96), shape("circle", ORG, 96), shape("rectangle", ORG, 96),
       shape("triangle", PUR, 96), shape("square", ORG, 96), shape("circle", PUR, 96)], [0, 2], "shape", 3) },
-  { t: "邊個係正方形？圈出嚟。", key: "最右邊（正方形）",
-    html: opts([shape("rectangle", PUR, 96), shape("circle", PUR, 96), shape("square", PUR, 96)], 2, "shape") },
+  { t: "呢個大正方形用咗幾多個細正方形？圈出嚟。", key: "9 個細正方形（3×3）",
+    html: `<div class="stage"><div style="display:grid;grid-template-columns:repeat(3,46px);grid-auto-rows:46px;gap:2px">${Array.from({ length: 9 }, () => `<div style="background:${PUR};border-radius:5px"></div>`).join("")}</div></div>` + opts(["7", "9", "10"], 1, "num") },
   { t: "將一樣嘅圖形用線連埋一齊。", key: "紫色圓形↔紫色圓形、橙色正方形↔橙色正方形、橙色三角形↔橙色三角形",
     html: match([shape("circle", PUR, 76), shape("square", ORG, 76), shape("triangle", ORG, 76)], ["cp", "sq-o", "tri-o"],
       [shape("triangle", ORG, 46), shape("circle", PUR, 46), shape("square", ORG, 46)], ["tri-o", "cp", "sq-o"],
@@ -370,8 +379,12 @@ const Q = [
     html: opts([o("pencil", 56), o("book", 56), o("crayon", 56), o("pizza", 56)], 3, "", 4) },
   { t: "睇吓啲顏色點樣排，下一個應該係咩顏色？圈出嚟。", key: "中間（紫色）",
     html: `<div class="stage seq">${[ORG, ORG, PUR, ORG, ORG].map(dot).join("")}<span class="qbox">?</span></div>` + opts([dot(ORG), dot(PUR), dot(NVY)], 1) },
-  { t: "睇吓啲圖案點樣排，下一個應該係邊樣？圈出嚟。", key: "最左邊（花花）",
-    html: `<div class="stage seq">${["flower", "clover", "clover", "flower", "clover", "clover"].map(n => o(n, 52)).join("")}<span class="qbox">?</span></div>` + opts([o("flower", 56), o("clover", 56), o("maple", 56)], 0) },
+  { t: "每隻兔仔要一個蘿蔔。邊幅圖分得啱？", key: "中間（3 隻兔仔、3 個蘿蔔，啱啱好一隻一個）",
+    html: opts([
+      `<div class="pairscene">${pairrow("rabbit", 2, 46)}${pairrow("carrot", 3, 36)}</div>`,
+      `<div class="pairscene">${pairrow("rabbit", 3, 42)}${pairrow("carrot", 3, 34)}</div>`,
+      `<div class="pairscene">${pairrow("rabbit", 3, 42)}${pairrow("carrot", 2, 36)}</div>`
+    ], 1) },
   { t: "邊隻動物行喺最前面？圈出嚟。", key: "最左邊嗰隻（兔仔行最前）",
     html: `<div class="stage scene15"><div class="grassline"></div><div class="arrow15"></div>` +
       o("rabbit", 76, "position:absolute;left:10%;bottom:14px;") +

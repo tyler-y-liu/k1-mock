@@ -273,6 +273,31 @@ body.examining .wrap { padding-bottom: 120px; }
 
 .stage.walk { position: relative; justify-content: space-around; padding-right: 34px; }
 .stage.walk .arrow { position: absolute; right: 2px; top: 50%; width: 0; height: 0; border-top: 11px solid transparent; border-bottom: 11px solid transparent; border-left: 20px solid var(--pencil); }
+
+/* set4 題型輪替 #2：一對一對應（每隻兔仔配一個蘿蔔），一個選項 = 一個「場景」 */
+.pairscene { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+/* img.o 係 display:block：同一組（2／3 隻）圖要自己一個 flex 行，否則會上下疊成一條線 */
+.pairrow { display: flex; gap: 4px; align-items: flex-end; }
+
+/* set4 題型輪替 #16：影子配對，右欄一定要純黑剪影。
+   注意：img/set4/*.png 係 RGB 冇 alpha（白底），`img.sil{filter:brightness(0)}` 會連白底一齊塗黑，
+   出一個黑色方塊（實測；set3 第 10 題網頁版中招）。所以右欄改用 emoji 字形（本身有 alpha，
+   brightness(0) 之後係真正純黑剪影），同打印版用同一個剪影，兩邊一致。 */
+.sil { filter: brightness(0); display: inline-block; line-height: 1; }
+
+/* set4 題型輪替 #5（圈出有 6 隻嘅一堆）：窄機三欄每格只剩 ~78px，
+   6 隻蝴蝶一定被迫成兩三行（5 隻都會斷行），數唔清。窄過 520px 改成直向三堆，
+   每堆佔整行闊度，一隻一行數得清；桌面上仍然係三欄並排。 */
+@media (max-width: 520px) {
+  #q2 .opts, #q5 .opts { grid-template-columns: 1fr; }
+  #q2 .opt, #q5 .opt { min-height: 76px; }
+  #q2 .opt img.o, #q5 .opt img.o { height: 30px !important; }
+}
+/* 360px 一部手機：6 隻蝴蝶（40px 闊 × 6 = 240px）加 5 個 3px gap 剛好超籃仔內寬
+   250px 5px，會斷成 5+1 → 收細到 26px（實測 6 隻一行）。 */
+@media (max-width: 379px) {
+  #q5 .opt img.o { height: 26px !important; }
+}
 </style>
 
 <div class="wrap" id="root">
@@ -311,9 +336,10 @@ body.examining .wrap { padding-bottom: 120px; }
       <li><strong>題數：18 題</strong>，同第二、三套一樣，對齊官方上限。</li>
       <li><strong>補齊 3 種之前未考嘅問法</strong>：第 9 題「倉鼠喺枱上面」（上和下）、第 10 題「邊隻行最後面」（前和後）、第 18 題「呢幅係邊隻動物嘅耳仔」（部份與全體）。</li>
       <li><strong>新增 1 種配對</strong>：第 13 題要將實物（薄餅、足球、書）連去一樣嘅形狀。</li>
-      <li><strong>規律題升級</strong>：第 15 題三色循環（紅藍黃 ABC）、第 16 題蝴蝶蝴蝶蜜蜂（AAB）。</li>
+      <li><strong>3 題換成新題型</strong>：第 2 題一對一對應（每隻兔仔要一個蘿蔔）、第 5 題由數字搵數量（圈出有 6 隻嘅一堆）、第 16 題動物連影子（右邊係純黑剪影）。</li>
+      <li><strong>規律題</strong>：第 15 題三色循環（紅藍黃 ABC）。</li>
       <li><strong>數序改成倒數</strong>：第 17 題 9 8 _ 6 5，要由大數返落細數。</li>
-      <li><strong>物料全部換新</strong>：蜜蜂、瓢蟲、貓頭鷹、樹熊、狐狸、熊貓、檸檬、海豚、倉鼠、長頸鹿、企鵝、斑馬、樹……同前三套冇一樣重複。</li>
+      <li><strong>物料全部換新</strong>：蜜蜂、兔仔、蘿蔔、蝴蝶、貓頭鷹、樹熊、狐狸、熊貓、海豚、倉鼠、長頸鹿、企鵝、斑馬、樹……同前三套冇一樣重複。</li>
       <li>形式一樣：廣東話讀題、圈答案／連線、做完自動計分。</li>
     </ul>
   </section>
@@ -346,7 +372,7 @@ body.examining .wrap { padding-bottom: 120px; }
 
 <script>
 const IMG = n => `../img/set4/${n}.png`;
-const CLIP = id => `../audio/set4/${id}.mp3?v=1`;
+const CLIP = id => `../audio/set4/${id}.mp3?v=2`;
 const o = (n, h = 60, extra = "") => `<img class="o" src="${IMG(n)}" alt="" style="height:${h}px;${extra}">`;
 const rep = (n, k, h) => Array.from({ length: k }, () => o(n, h)).join("");
 const shape = (kind, color, size = 64) => {
@@ -390,15 +416,19 @@ const queue = () => `<div class="stage">` +
 const Q = [
   { t: "數一數有幾多隻蜜蜂？圈出啱嘅數字。", key: "8",
     html: `<div class="stage row">${rep("bee", 8, 42)}</div>` + opts(["7", "8", "9"], 1, "num") },
-  { t: "數一數有幾多隻瓢蟲？圈出啱嘅數字。", key: "9",
-    html: `<div class="stage row">${rep("ladybird", 9, 38)}</div>` + opts(["9", "8", "10"], 0, "num") },
+  { t: "每隻兔仔要一個蘿蔔。邊幅圖分得啱？", key: "中間（3 隻兔仔、3 個蘿蔔，一隻配一個）",
+    html: opts([
+      `<div class="pairscene"><div class="pairrow">${rep("rabbit", 2, 46)}</div><div class="pairrow">${rep("carrot", 3, 36)}</div></div>`,
+      `<div class="pairscene"><div class="pairrow">${rep("rabbit", 3, 42)}</div><div class="pairrow">${rep("carrot", 3, 34)}</div></div>`,
+      `<div class="pairscene"><div class="pairrow">${rep("rabbit", 3, 42)}</div><div class="pairrow">${rep("carrot", 2, 36)}</div></div>`
+    ], 1) },
   { t: "數一數左邊每一格有幾多樣嘢，用線連去右邊啱嘅數字。", key: "貓頭鷹→2、樹熊→6、狐狸→4",
     html: match([rep("owl", 2, 34), rep("koala", 6, 30), rep("fox", 4, 34)], ["2", "6", "4"],
       ["4", "2", "6"], ["4", "2", "6"], "貓頭鷹連 2，樹熊連 6，狐狸連 4") },
   { t: "邊邊啲熊貓多啲？圈出嗰邊。", key: "右邊（7 隻）",
     html: opts([basket(rep("panda", 4, 38)), basket(rep("panda", 7, 34))], 1, "", 2) },
-  { t: "邊堆檸檬最少？圈出嗰堆。", key: "左邊（2 個）",
-    html: opts([basket(rep("lemon", 2, 38)), basket(rep("lemon", 5, 34)), basket(rep("lemon", 4, 36))], 0) },
+  { t: "圈出有 6 隻嘅一堆。", key: "中間（6 隻）",
+    html: opts([basket(rep("butterfly", 4, 40)), basket(rep("butterfly", 6, 36)), basket(rep("butterfly", 5, 38))], 1, "", 1) },
   { t: "邊隻海豚最大？圈出嚟。", key: "最右邊（最大）",
     html: opts([o("dolphin", 72), o("dolphin", 50), o("dolphin", 104)], 2, "alignb") },
   { t: "邊條絲帶最短？圈出嚟。", key: "最下面嗰條（藍色、最短）",
@@ -431,8 +461,12 @@ const Q = [
       `<span class="bigemoji">✈️</span>`, `<span class="bigemoji">🍊</span>`], 3, "", 4) },
   { t: "睇吓啲顏色點樣排，下一個應該係咩顏色？圈出嚟。", key: "黃色（紅藍黃 ABC 循環）",
     html: `<div class="stage seq">${[RED, BLU, YEL, RED, BLU].map(dot).join("")}<span class="qbox">?</span></div>` + opts([dot(YEL), dot(RED), dot(BLU)], 0) },
-  { t: "睇吓啲圖案點樣排，下一個應該係邊樣？圈出嚟。", key: "蜜蜂（蝴蝶蝴蝶蜜蜂 AAB）",
-    html: `<div class="stage seq">${["butterfly", "butterfly", "bee", "butterfly", "butterfly"].map(n => o(n, n === "bee" ? 44 : 48)).join("")}<span class="qbox">?</span></div>` + opts([o("butterfly", 52), o("ladybird", 52), o("bee", 52)], 2) },
+  { t: "將每隻動物連去佢嘅影子。", key: "狐狸→第 2 個影子、倉鼠→第 3 個、企鵝→第 1 個",
+    html: match([o("fox", 64), o("hamster", 58), o("penguin", 64)], ["fox", "hamster", "penguin"],
+      [`<img src="${IMG("sil-penguin")}" alt="影子" style="height:64px">`,
+       `<img src="${IMG("sil-fox")}" alt="影子" style="height:56px">`,
+       `<img src="${IMG("sil-hamster")}" alt="影子" style="height:54px">`],
+      ["penguin", "fox", "hamster"], "狐狸連第 2 個影子，倉鼠連第 3 個，企鵝連第 1 個") },
   { t: "睇吓啲數字牌，空格應該填邊個數？圈出嚟。", key: "7（倒數 9 8 7 6 5）",
     html: `<div class="stage seq">${nplate(9)}${nplate(8)}<span class="qbox">?</span>${nplate(6)}${nplate(5)}</div>` + opts(["6", "10", "7"], 2, "num") },
   { t: "呢幅圖係邊隻動物嘅耳仔？圈出嚟。", key: "最右邊（兔仔）",
