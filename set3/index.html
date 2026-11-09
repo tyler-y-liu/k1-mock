@@ -257,6 +257,7 @@ body.examining .wrap { padding-bottom: 120px; }
       <a href="../">第一套</a>
       <a href="../set2/">第二套</a>
       <a href="./" class="on" aria-current="page">第三套</a>
+      <a href="../set4/">第四套</a>
     </nav>
     <h1>星星 K1 數學模擬卷（第三套）</h1>
     <p>參考「香港學界數學及奧數精英賽」公開章程入面 K1 數學組嘅形式自製：18 題，廣東話錄音讀題，小朋友只需圈出或者連線。同前兩套同一套形式，但物料全部換新，另外加入咗序數（第幾個）、前後位置同三款循環規律。題目按 K1 上學期課程推斷，<strong>唔係官方試題，同主辦機構無關</strong>。免費、免註冊。</p>
@@ -320,7 +321,7 @@ body.examining .wrap { padding-bottom: 120px; }
 
 <script>
 const IMG = n => `../img/set3/${n}.png`;
-const CLIP = id => `../audio/set3/${id}.mp3?v=1`;
+const CLIP = id => `../audio/set3/${id}.mp3?v=2`;
 const o = (n, h = 60, extra = "") => `<img class="o" src="${IMG(n)}" alt="" style="height:${h}px;${extra}">`;
 const rep = (n, k, h) => Array.from({ length: k }, () => o(n, h)).join("");
 const shape = (kind, color, size = 64) => {
