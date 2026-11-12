@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>换一个声音听听 · 9点到12点</title>
+<style>
+  :root{--cream:#fff8ee;--ink:#3d3a34;--line:#e7dccb}
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--cream);color:var(--ink);
+    font-family:"PingFang HK","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+    padding:26px 16px 60px;
+  }
+  .wrap{max-width:760px;margin:0 auto}
+  h1{font-size:clamp(20px,4.5vw,28px);margin:0 0 6px;font-weight:800}
+  .sub{color:#9a9080;font-size:15px;margin-bottom:24px;line-height:1.6}
+  .card{
+    background:#fff;border:3px solid var(--line);border-radius:20px;
+    padding:14px 16px 12px;margin-bottom:18px;
+  }
+  .card.now{border-color:#f6c9b9;background:#fffaf6}
+  .name{font-size:18px;font-weight:800;margin-bottom:2px}
+  .name span{font-size:13px;font-weight:600;color:#b3a897;margin-left:8px}
+  .tag{
+    display:inline-block;font-size:12px;font-weight:800;color:#fff;background:#f2704a;
+    border-radius:999px;padding:2px 9px;margin-left:8px;vertical-align:2px;
+  }
+  .desc{font-size:14px;color:#8a8070;margin:2px 0 10px;line-height:1.5}
+  video,audio{width:100%;border-radius:14px;display:block;background:#f4ece0}
+  audio{margin:6px 0 2px}
+  .foot{margin-top:26px;font-size:14px;color:#b3a897;line-height:1.8}
+  .foot a{color:#8a8070}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>换一个声音听听</h1>
+  <div class="sub">同一套画面，只换配音。挑一个你觉得顺耳的，我把主页那个换成它。</div>
+
+  <div class="card now">
+    <div class="name">① 治愈女声<span>现在主页用的</span><b class="tag">当前</b></div>
+    <div class="desc">柔和，但你自己说听着不够好 —— 我猜是句尾有点「念稿」。</div>
+    <video src="clock-3h-mandarin.mp4" controls preload="metadata" playsinline></video>
+  </div>
+
+  <div class="card">
+    <div class="name">② 沉稳男声</div>
+    <div class="desc">偏低的中年男声，像爸爸念给他听。最稳重，也最短（19.5 秒）。</div>
+    <video src="clock-3h-mandarin-male.mp4" controls preload="metadata" playsinline></video>
+  </div>
+
+  <div class="card">
+    <div class="name">③ 网感少女</div>
+    <div class="desc">年轻女声，活泼一点、语调起伏大。20 秒。</div>
+    <video src="clock-3h-mandarin-girl.mp4" controls preload="metadata" playsinline></video>
+  </div>
+
+  <div class="card">
+    <div class="name">④ 沧桑老者</div>
+    <div class="desc">老爷爷声线，语速慢。只有试听片段（两句话），喜欢的话我再出整版。</div>
+    <audio src="clock-3h-sample-old.mp3" controls preload="metadata"></audio>
+  </div>
+
+  <div class="card">
+    <div class="name">⑤ 粤语 · 暖心师奶</div>
+    <div class="desc">粤语整个版本，给星星在学校听惯的语感。</div>
+    <video src="clock-3h-cantonese.mp4" controls preload="metadata" playsinline></video>
+  </div>
+
+  <div class="foot">
+    回动画页：<a href="./">9 点到 12 点，有几个小时？</a><br>
+    ① 的配音包是 <code>Mandarin_治愈女声</code>。另外还能上传一段真人录音做克隆音色（要的话我去试）。
+  </div>
+</div>
+</body>
+</html>
