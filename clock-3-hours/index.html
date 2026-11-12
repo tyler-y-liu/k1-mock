@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>9点到12点，有几个小时？</title>
+<style>
+  :root{
+    --cream:#fff8ee;
+    --ink:#3d3a34;
+    --c1:#7ec8e3;
+    --c2:#ffb703;
+    --c3:#8ac926;
+    --line:#e7dccb;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:"PingFang HK","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+    display:flex;flex-direction:column;align-items:center;
+    padding:28px 20px 32px;
+    min-height:100%;
+  }
+  h1{
+    font-size:clamp(24px,3.4vw,40px);
+    margin:0 0 4px;
+    letter-spacing:.02em;
+    font-weight:800;
+  }
+  .sub{font-size:clamp(14px,1.5vw,18px);color:#9a9080;margin-bottom:22px}
+
+  .stage{
+    display:flex;align-items:center;justify-content:center;
+    gap:clamp(20px,4vw,56px);
+    flex-wrap:wrap;
+    width:100%;max-width:1100px;
+  }
+  .clockwrap{width:clamp(260px,42vw,460px);flex:0 0 auto}
+  svg{width:100%;height:auto;display:block;overflow:visible}
+
+  .sector{opacity:0}
+  .sector.on{opacity:1}
+
+  .num{font-size:27px;font-weight:700;fill:#b9ad98}
+  .num.stop{fill:#f2704a;font-size:31px}
+
+  .panel{
+    flex:0 0 auto;width:clamp(290px,36vw,400px);
+    display:flex;flex-direction:column;gap:22px;
+  }
+  .counter{
+    background:#fff;border:3px solid var(--line);border-radius:22px;
+    padding:16px 18px;text-align:center;
+    font-size:clamp(18px,2vw,24px);font-weight:700;line-height:1.5;
+  }
+  .counter b{font-size:clamp(26px,3vw,34px);color:#f2704a}
+
+  .tray{display:flex;gap:12px;justify-content:center}
+  .blk{
+    width:clamp(58px,7vw,80px);height:clamp(58px,7vw,80px);
+    border-radius:16px;display:grid;place-items:center;
+    font-size:clamp(26px,3vw,34px);font-weight:800;color:#fff;
+    opacity:0;transform:scale(.4) translateY(-10px);
+  }
+  .blk:nth-child(1){background:var(--c1)}
+  .blk:nth-child(2){background:var(--c2)}
+  .blk:nth-child(3){background:var(--c3)}
+  .blk.bounce{animation:bounce .6s ease}
+  @keyframes bounce{0%,100%{transform:scale(1)}40%{transform:scale(1.16) rotate(-3deg)}}
+
+  .say{
+    min-height:3.2em;
+    font-size:clamp(17px,2vw,23px);line-height:1.65;
+    background:#fff;border:3px solid var(--line);border-left:10px solid #ffd166;
+    border-radius:18px;padding:14px 18px;
+  }
+  .say b{color:#f2704a;white-space:nowrap}
+
+  .btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:26px}
+  button{
+    font-family:inherit;font-size:clamp(16px,1.7vw,20px);font-weight:800;
+    padding:14px 26px;border-radius:999px;border:none;cursor:pointer;
+    background:#f2704a;color:#fff;box-shadow:0 4px 0 #cf5535;
+    transition:transform .12s,box-shadow .12s,background .2s;
+  }
+  button:active{transform:translateY(3px);box-shadow:0 1px 0 #cf5535}
+  button.ghost{background:#fff;color:#8a8070;box-shadow:0 4px 0 var(--line)}
+  button.ghost:active{box-shadow:0 1px 0 var(--line)}
+  button:disabled{opacity:.35;cursor:default;transform:none;box-shadow:0 4px 0 #cf5535}
+
+  .dl{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+  .dl a{
+    font-size:clamp(14px,1.5vw,17px);font-weight:700;text-decoration:none;
+    color:#8a8070;background:#fff;border:2px solid var(--line);
+    padding:8px 16px;border-radius:999px;
+  }
+  .dl a:hover{color:#f2704a;border-color:#f6c9b9}
+  .tip{margin-top:10px;font-size:14px;color:#b3a897;text-align:center;max-width:640px;line-height:1.7}
+</style>
+</head>
+<body>
+
+<h1>9 点到 12 点，有几个小时？</h1>
+<div class="sub">看短针走了几格 —— 数的是路，不是站牌</div>
+
+<div class="stage">
+  <div class="clockwrap">
+    <svg viewBox="0 0 400 400" role="img" aria-label="钟面动画">
+      <defs>
+        <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#00000018"/>
+        </filter>
+      </defs>
+
+      <circle cx="200" cy="200" r="172" fill="#ffffff" stroke="#e7dccb" stroke-width="8"/>
+
+      <!-- 三段扇形由 JS 插入 -->
+      <g id="sectors"></g>
+
+      <!-- 12 个刻度 -->
+      <g id="ticks"></g>
+
+      <!-- 数字 -->
+      <g id="nums"></g>
+
+      <!-- 短针 -->
+      <g id="hand" style="transform-origin:200px 200px;transform:rotate(270deg)">
+        <line x1="200" y1="200" x2="200" y2="88" stroke="#3d3a34" stroke-width="17" stroke-linecap="round"/>
+        <circle cx="200" cy="200" r="13" fill="#3d3a34"/>
+      </g>
+      <circle cx="200" cy="200" r="6" fill="#fff"/>
+    </svg>
+  </div>
+
+  <div class="panel">
+    <div class="counter" id="counter">短针走了 <b>0</b> 格<br>= <b>0</b> 个小时</div>
+    <div class="tray" id="tray">
+      <div class="blk" id="b1">1</div>
+      <div class="blk" id="b2">2</div>
+      <div class="blk" id="b3">3</div>
+    </div>
+    <div class="say" id="say">钟上有一根<b>短针</b>。现在它指着 9，就是 9 点。</div>
+  </div>
+</div>
+
+<div class="btns">
+  <button id="play">▶ 播放</button>
+  <button id="next" class="ghost">下一步 ▸</button>
+  <button id="reset" class="ghost">↺ 重播</button>
+</div>
+
+<div class="dl">
+  <a href="clock-3h-mandarin.mp4">▶ 普通话配音版</a>
+  <a href="clock-3h-cantonese.mp4">▶ 粤语配音版</a>
+</div>
+
+<div class="tip">
+  一格 = 一个小时。9→10 一格，10→11 第二格，11→12 第三格，一共 3 个。
+  9、10、11、12 是四个<strong>站牌</strong>，中间走过的三段路才是小时。
+</div>
+
+<script>
+(function(){
+  var NS = 'http://www.w3.org/2000/svg';
+  var cx = 200, cy = 200, RAD = Math.PI/180;
+  var COLORS = ['#7ec8e3', '#ffb703', '#8ac926'];
+  var R_WEDGE = 118, R_NUM = 148;
+
+  function pt(h, r){
+    var a = h * 30 * RAD;
+    return [cx + r*Math.sin(a), cy - r*Math.cos(a)];
+  }
+
+  /* ---------- 画钟 ---------- */
+  var ticksG = document.getElementById('ticks');
+  for (var h = 0; h < 12; h++){
+    var big = (h % 3 === 0);
+    var p1 = pt(h, big ? 156 : 160), p2 = pt(h, 168);
+    var ln = document.createElementNS(NS, 'line');
+    ln.setAttribute('x1', p1[0]); ln.setAttribute('y1', p1[1]);
+    ln.setAttribute('x2', p2[0]); ln.setAttribute('y2', p2[1]);
+    ln.setAttribute('stroke', big ? '#d9ccb6' : '#ece3d4');
+    ln.setAttribute('stroke-width', big ? 6 : 3);
+    ln.setAttribute('stroke-linecap', 'round');
+    ticksG.appendChild(ln);
+  }
+
+  var numsG = document.getElementById('nums');
+  var numEls = {};
+  for (var n = 1; n <= 12; n++){
+    var pn = pt(n === 12 ? 0 : n, R_NUM);
+    var tx = document.createElementNS(NS, 'text');
+    tx.setAttribute('x', pn[0]); tx.setAttribute('y', pn[1]);
+    tx.setAttribute('text-anchor', 'middle');
+    tx.setAttribute('dominant-baseline', 'central');
+    tx.setAttribute('class', 'num');
+    tx.textContent = n;
+    numsG.appendChild(tx);
+    numEls[n] = tx;
+  }
+
+  var secG = document.getElementById('sectors');
+  var sectors = [];
+  for (var i = 0; i < 3; i++){
+    var a1 = pt(9 + i, R_WEDGE), a2 = pt(10 + i, R_WEDGE);
+    var path = document.createElementNS(NS, 'path');
+    path.setAttribute('d',
+      'M' + cx + ',' + cy +
+      ' L' + a1[0] + ',' + a1[1] +
+      ' A' + R_WEDGE + ',' + R_WEDGE + ' 0 0 1 ' + a2[0] + ',' + a2[1] + ' Z');
+    path.setAttribute('fill', COLORS[i]);
+    path.setAttribute('class', 'sector');
+    path.style.opacity = '0';
+    secG.appendChild(path);
+    sectors.push(path);
+  }
+
+  /* ---------- 元素 ---------- */
+  var hand    = document.getElementById('hand');
+  var counter = document.getElementById('counter');
+  var say     = document.getElementById('say');
+  var blocks  = [document.getElementById('b1'),
+                 document.getElementById('b2'),
+                 document.getElementById('b3')];
+  var btnPlay = document.getElementById('play');
+  var btnNext = document.getElementById('next');
+  var btnRe   = document.getElementById('reset');
+
+  /* ---------- 时间轴：页面与视频共用同一套状态 ---------- */
+  var START = 3560;             // 开场停留
+  var SEG = 1300;            // 短针走一格的时长
+  var GAP = 2838;             // 每格之后停顿
+  var STEP  = SEG + GAP;       // 2250
+  var T     = [0, 1, 2].map(function(k){ return START + k * STEP; });
+  var TOTAL = 15974;   // 7650：走到 12 点，开始收尾
+  var END = 23696;       // 10850
+
+  var LINES = [
+    '钟上有一根<b>短针</b>。现在它指着 9，就是 9 点。',
+    '从 9 点走到 10 点，短针走了<b>一格</b>。<br>一格就是一个小时。',
+    '从 10 点走到 11 点，又走了一格。<br>现在是<b>两个小时</b>。',
+    '从 11 点走到 12 点，第三格。<br>一共<b>三个小时</b>！'
+  ];
+  var FINAL = '看：9、10、11、12 是四个<b>站牌</b>。<br>中间走过三段路，所以是 <b>3 个小时</b>。';
+
+  function cl(x){ return x < 0 ? 0 : (x > 1 ? 1 : x); }
+  function ease(u){ return u < 0.5 ? 2*u*u : 1 - Math.pow(-2*u + 2, 2) / 2; }
+  function back(p){
+    var c1 = 1.70158, c3 = c1 + 1;
+    return 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2);
+  }
+
+  function stateAt(t){
+    var st = { hand: 9, wedge: [0,0,0], blk: [], counter: 0, say: LINES[0], stopped: false };
+    for (var i = 1; i <= 3; i++){
+      var s = T[i-1];
+      var u = cl((t - s) / SEG);
+      if (t >= s){
+        st.say  = LINES[i];
+        st.hand = 9 + (i-1) + ease(u);
+        st.wedge[i-1] = ease(u);
+      }
+      var q = cl((t - (s + SEG)) / 420);
+      if (t >= s + SEG) st.counter = i;
+      st.blk.push(q <= 0 ? {op:0, sc:0.4}
+                         : {op: Math.min(1, q*2.2), sc: 0.4 + 0.6*back(q)});
+    }
+    if (t >= TOTAL){
+      st.stopped = true;
+      st.hand = 12;
+      st.wedge = [1,1,1];
+      st.counter = 3;
+      st.say = FINAL;
+      for (var k = 0; k < 3; k++){
+        var l = t - (TOTAL + 260*k);
+        if (l >= 0 && l < 650) st.blk[k].sc *= 1 + 0.14 * Math.sin(Math.PI * l / 650);
+      }
+    }
+    return st;
+  }
+
+  var lastSay = null, lastCnt = null, lastStop = null;
+  function render(st){
+    hand.style.transform = 'rotate(' + (st.hand*30) + 'deg)';
+    for (var i = 0; i < 3; i++){
+      sectors[i].style.opacity = (0.55 * st.wedge[i]).toFixed(3);
+      var b = blocks[i], s2 = st.blk[i];
+      b.style.opacity = s2.op.toFixed(3);
+      b.style.transform = 'scale(' + s2.sc.toFixed(3) + ') translateY(' + ((1-s2.sc)*-10).toFixed(1) + 'px)';
+    }
+    if (st.counter !== lastCnt){
+      counter.innerHTML = '短针走了 <b>' + st.counter + '</b> 格<br>= <b>' + st.counter + '</b> 个小时';
+      lastCnt = st.counter;
+    }
+    if (st.say !== lastSay){ say.innerHTML = st.say; lastSay = st.say; }
+    if (st.stopped !== lastStop){
+      [9,10,11,12].forEach(function(hh){ numEls[hh].classList.toggle('stop', st.stopped); });
+      lastStop = st.stopped;
+    }
+  }
+
+  /* ---------- 播放控制 ---------- */
+  var t = 0, t0 = 0, running = false, raf = null;
+
+  function loop(){
+    if (!running) return;
+    t = performance.now() - t0;
+    if (t >= END){
+      t = END; running = false; raf = null;
+      render(stateAt(t));
+      btnPlay.textContent = '▶ 再播一次';
+      return;
+    }
+    render(stateAt(t));
+    raf = requestAnimationFrame(loop);
+  }
+
+  function play(){
+    if (t >= END) t = 0;
+    t0 = performance.now() - t;
+    running = true;
+    btnPlay.textContent = '⏸ 暂停';
+    if (!raf) raf = requestAnimationFrame(loop);
+  }
+
+  function pause(){
+    running = false; raf = null;
+    btnPlay.textContent = (t >= END) ? '▶ 再播一次' : '▶ 继续';
+  }
+
+  function jumps(){ return [T[0]+SEG+420, T[1]+SEG+420, T[2]+SEG+420, TOTAL+700]; }
+
+  function next(){
+    running = false; raf = null;
+    var js = jumps(), target = null;
+    for (var i = 0; i < js.length; i++){ if (js[i] > t + 60){ target = js[i]; break; } }
+    if (target === null) target = END;
+    t = target;
+    render(stateAt(t));
+    btnPlay.textContent = (t >= END) ? '▶ 再播一次' : '▶ 继续';
+  }
+
+  function reset(){
+    running = false; raf = null; t = 0;
+    btnPlay.textContent = '▶ 播放';
+    render(stateAt(0));
+  }
+
+  btnPlay.addEventListener('click', function(){ running ? pause() : play(); });
+  btnNext.addEventListener('click', next);
+  btnRe.addEventListener('click', reset);
+  window.addEventListener('keydown', function(e){
+    if (e.key === ' '){ e.preventDefault(); running ? pause() : play(); }
+    if (e.key === 'ArrowRight'){ e.preventDefault(); next(); }
+    if (e.key === 'r' || e.key === 'R'){ reset(); }
+  });
+
+  /* ---------- 模式：?t=毫秒 定格一帧；?auto=1 自动播放 ---------- */
+  render(stateAt(0));
+  var mT = location.search.match(/[?&]t=(\d+)/);
+  if (mT){
+    t = Math.min(parseInt(mT[1], 10), END);
+    render(stateAt(t));
+  } else if (/[?&]auto=1/.test(location.search)){
+    setTimeout(play, 350);
+  }
+})();
+</script>
+</body>
+</html>
