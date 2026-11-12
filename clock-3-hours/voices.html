@@ -36,41 +36,47 @@
 <body>
 <div class="wrap">
   <h1>换一个声音听听</h1>
-  <div class="sub">同一套画面，只换配音。挑一个你觉得顺耳的，我把主页那个换成它。</div>
+  <div class="sub">同一套画面，只换配音和语速。三个「网感少女」是同一个音色，只是语速不一样。</div>
 
   <div class="card now">
-    <div class="name">① 治愈女声<span>现在主页用的</span><b class="tag">当前</b></div>
-    <div class="desc">柔和，但你自己说听着不够好 —— 我猜是句尾有点「念稿」。</div>
+    <div class="name">🎯 网感少女 · 慢一点<span>语速 ×1.0，22.0 秒</span><b class="tag">主页现在用这个</b></div>
+    <div class="desc">你觉得之前太快，这是降了一档的版本。比原版慢 13%。</div>
     <video src="clock-3h-mandarin.mp4" controls preload="metadata" playsinline></video>
   </div>
 
   <div class="card">
-    <div class="name">② 沉稳男声</div>
-    <div class="desc">偏低的中年男声，像爸爸念给他听。最稳重，也最短（19.5 秒）。</div>
-    <video src="clock-3h-mandarin-male.mp4" controls preload="metadata" playsinline></video>
+    <div class="name">🐢 网感少女 · 再慢一点<span>语速 ×0.9，23.7 秒</span></div>
+    <div class="desc">还想更慢就用这个。再慢下去会有点拖，不建议再往下调。</div>
+    <video src="clock-3h-mandarin-girl-slower.mp4" controls preload="metadata" playsinline></video>
   </div>
 
   <div class="card">
-    <div class="name">③ 网感少女</div>
-    <div class="desc">年轻女声，活泼一点、语调起伏大。20 秒。</div>
+    <div class="name">🐇 网感少女 · 原速<span>语速 ×1.15，20.1 秒</span></div>
+    <div class="desc">之前你说偏快的那个，留在这里方便对比。</div>
     <video src="clock-3h-mandarin-girl.mp4" controls preload="metadata" playsinline></video>
   </div>
 
   <div class="card">
-    <div class="name">④ 沧桑老者</div>
-    <div class="desc">老爷爷声线，语速慢。只有试听片段（两句话），喜欢的话我再出整版。</div>
+    <div class="name">沉稳男声<span>19.5 秒</span></div>
+    <div class="desc">偏低的中年男声，最短的一版。</div>
+    <video src="clock-3h-mandarin-male.mp4" controls preload="metadata" playsinline></video>
+  </div>
+
+  <div class="card">
+    <div class="name">沧桑老者<span>试听两句话</span></div>
+    <div class="desc">老爷爷声线，语速慢。喜欢的话我再出整版。</div>
     <audio src="clock-3h-sample-old.mp3" controls preload="metadata"></audio>
   </div>
 
   <div class="card">
-    <div class="name">⑤ 粤语 · 暖心师奶</div>
+    <div class="name">粤语 · 暖心师奶<span>23.7 秒</span></div>
     <div class="desc">粤语整个版本，给星星在学校听惯的语感。</div>
     <video src="clock-3h-cantonese.mp4" controls preload="metadata" playsinline></video>
   </div>
 
   <div class="foot">
     回动画页：<a href="./">9 点到 12 点，有几个小时？</a><br>
-    ① 的配音包是 <code>Mandarin_治愈女声</code>。另外还能上传一段真人录音做克隆音色（要的话我去试）。
+    音色来自网关的 <code>Mandarin_网感少女</code>；语速是用 ffmpeg 的 atempo 调的，音高不变。
   </div>
 </div>
 </body>

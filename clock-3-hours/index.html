@@ -230,13 +230,13 @@
   var btnRe   = document.getElementById('reset');
 
   /* ---------- 时间轴：页面与视频共用同一套状态 ---------- */
-  var START = 2896;             // 开场停留
+  var START = 3185;             // 开场停留
   var SEG = 1300;            // 短针走一格的时长
-  var GAP = 2288;             // 每格之后停顿
+  var GAP = 2622;             // 每格之后停顿
   var STEP  = SEG + GAP;       // 2250
   var T     = [0, 1, 2].map(function(k){ return START + k * STEP; });
-  var TOTAL = 13660;   // 7650：走到 12 点，开始收尾
-  var END = 20077;       // 10850
+  var TOTAL = 14951;   // 7650：走到 12 点，开始收尾
+  var END = 22008;       // 10850
 
   var LINES = [
     '钟上有一根<b>短针</b>。现在它指着 9，就是 9 点。',
